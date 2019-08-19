@@ -12,7 +12,7 @@ class HttpClientServiceProvider implements ServiceProviderInterface
 {
     public function register(Container $pimple)
     {
-        $pimple['http_client'] = function ($pimple) {
+        !isset($pimple['http_client']) && $pimple['http_client'] = function ($pimple) {
             return new Client($pimple['config']['http'] ?? []);
         };
     }

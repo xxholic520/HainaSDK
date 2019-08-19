@@ -33,6 +33,7 @@ class ConfigTest extends TestCase
         $this->assertSame('haha', $config['baz.c.s']);
 
         $this->assertSame(1, $config->get('baz.a'));
+        $this->assertSame(9999, $config->get('baz.d', 9999));
 
         $config['foo'] = 'new bar';
         $this->assertSame('new bar', $config['foo']);

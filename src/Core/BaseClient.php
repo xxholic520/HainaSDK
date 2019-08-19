@@ -4,7 +4,9 @@
 namespace Sammy1992\Haina\Core;
 
 
+use GuzzleHttp\Middleware;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Sammy1992\Haina\Core\Traits\HasHttpRequests;
 
 /**
@@ -27,6 +29,58 @@ class BaseClient
     protected $accessToken;
 
     /**
+     * @var string
+     */
+    protected $baseUri;
+
+    /**
+     * BaseClient constructor.
+     *
+     * @param ServiceContainer $app
+     * @param AccessToken $accessToken
+     */
+    public function __construct(ServiceContainer $app, AccessToken $accessToken = null)
+    {
+        $this->app = $app;
+
+        $this->accessToken = $accessToken ?? $this->app['access_token'];
+    }
+
+    /**
+     * @param $url
+     * @param array $query
+     * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function httpGet($url, $query = [])
+    {
+        return $this->request($url, 'GET', ['query' => $query]);
+    }
+
+    /**
+     * @param $url
+     * @param array $data
+     * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function httpPost($url, $data = [])
+    {
+        return $this->request($url, 'POST', ['form_params' => $data]);
+    }
+
+    /**
+     * @param $url
+     * @param array $data
+     * @param array $query
+     * @return mixed
+     * @throws \GuzzleHttp\Exception\GuzzleException
+     */
+    public function httpPostJson($url, $data = [], $query = [])
+    {
+        return $this->request($url, 'POST', ['query' => $query, 'json' => $data]);
+    }
+
+    /**
      * @return mixed|AccessToken
      */
     public function getAccessToken()
@@ -43,19 +97,6 @@ class BaseClient
         $this->accessToken = $accessToken;
 
         return $this;
-    }
-
-    /**
-     * BaseClient constructor.
-     *
-     * @param ServiceContainer $app
-     * @param AccessToken $accessToken
-     */
-    public function __construct(ServiceContainer $app, AccessToken $accessToken = null)
-    {
-        $this->app = $app;
-
-        $this->accessToken = $accessToken ?? $this->app['access_token'];
     }
 
     /**
@@ -83,6 +124,9 @@ class BaseClient
      */
     public function registerHttpMiddlewares()
     {
+        // retry
+        $this->pushMiddleware($this->retryMiddleware(), 'retry');
+        // access_token
         $this->pushMiddleware($this->accessTokenMiddleware(), 'access_token');
     }
 
@@ -93,11 +137,34 @@ class BaseClient
     {
         return function ($handler) {
             return function (RequestInterface $request, array $options) use ($handler) {
-                if ($this->accessToken) {
-                    $this->accessToken->applyToRequest($request, $options);
-                }
+                if ($this->accessToken) $this->accessToken->applyToRequest($request, $options);
                 return $handler($request, $options);
             };
         };
+    }
+
+    /**
+     * Retry middleware
+     * @return callable
+     */
+    protected function retryMiddleware()
+    {
+        return Middleware::retry(function (
+            $retries,
+            RequestInterface $request,
+            ResponseInterface $response = null
+        ) {
+            if ($retries < $this->app->config->get('http.max_retries', 1) && $response) {
+                $response = json_decode($response->getBody(), true);
+
+                if (isset($response['retcode']) && in_array(abs($response['retcode']), [20002, 20004], true)) {
+                    $this->accessToken->refresh();
+                    return true;
+                }
+            }
+            return false;
+        }, function () {
+            return abs($this->app->config->get('http.retry_delay', 500));
+        });
     }
 }
