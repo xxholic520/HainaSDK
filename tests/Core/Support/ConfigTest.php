@@ -3,7 +3,7 @@
 namespace Sammy1992\Haina\Tests\Core\Support;
 
 use PHPUnit\Framework\TestCase;
-use Sammy1992\Haina\Core\Support\Config;
+use Sammy1992\Haina\Core\Config;
 
 class ConfigTest extends TestCase
 {
@@ -41,5 +41,8 @@ class ConfigTest extends TestCase
 
         unset($config['foo']);
         $this->assertTrue(!isset($config['foo']));
+
+        $config['foo.xyz'] = 1;
+        $this->assertSame(1, $config['foo.xyz']);
     }
 }

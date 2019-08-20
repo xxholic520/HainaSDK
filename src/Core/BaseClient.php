@@ -137,7 +137,9 @@ class BaseClient
     {
         return function ($handler) {
             return function (RequestInterface $request, array $options) use ($handler) {
-                if ($this->accessToken) $this->accessToken->applyToRequest($request, $options);
+                if ($this->accessToken) {
+                    $request = $this->accessToken->applyToRequest($request, $options);
+                }
                 return $handler($request, $options);
             };
         };

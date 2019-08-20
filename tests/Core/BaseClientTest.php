@@ -89,6 +89,7 @@ class BaseClientTest extends TestCase
 
     public function testRetryMiddleware()
     {
+        // default retry config
         $app         = new ServiceContainer();
         $accessToken = \Mockery::mock(AccessToken::class, [$app]);
 
@@ -107,6 +108,7 @@ class BaseClientTest extends TestCase
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('{"retcode":0}', (string)$response->getBody());
 
+        // retry 2 times
         $accessToken->expects()->refresh();
         $mockHandler = new MockHandler([
             new Response(200, [], '{"retcode":20002,"retmsg":"accessToken 过期"}'),
@@ -119,11 +121,32 @@ class BaseClientTest extends TestCase
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('{"retcode":20004,"retmsg":"accessToken 无效"}', (string)$response->getBody());
 
-        $app    = new ServiceContainer([
-            'http' => [
-                'max_retries' => 0,
-            ]
+        // test retry config
+        $app['config']['http.max_retries'] = 0;
+        $accessToken->expects()->refresh()->never();
+        $mockHandler = new MockHandler([
+            new Response(200, [], '{"retcode":20002,"retmsg":"accessToken 过期"}'),
+            new Response(200, [], '{"retcode":20004,"retmsg":"accessToken 无效"}'),
+            new Response(200, [], '{"retcode":0}')
         ]);
-        $object = $this->mock($app, $accessToken);
+        $handler     = $func($mockHandler);
+        $client      = new Client(['handler' => $handler]);
+        $response    = $client->request('GET', 'http://mock-url');
+        $this->assertSame('{"retcode":20002,"retmsg":"accessToken 过期"}', (string)$response->getBody());
+
+        // retry 3 times
+        $app['config']['http.max_retries'] = 3;
+        $app['config']['http.retry_delay'] = 1;
+        $accessToken->expects()->refresh()->times(3);
+        $mockHandler = new MockHandler([
+            new Response(200, [], '{"retcode":20002,"retmsg":"accessToken 过期"}'),
+            new Response(200, [], '{"retcode":20004,"retmsg":"accessToken 无效"}'),
+            new Response(200, [], '{"retcode":20002,"retmsg":"accessToken 过期"}'),
+            new Response(200, [], '{"retcode":0}')
+        ]);
+        $handler     = $func($mockHandler);
+        $client      = new Client(['handler' => $handler]);
+        $response    = $client->request('GET', 'http://mock-url');
+        $this->assertSame('{"retcode":0}', (string)$response->getBody());
     }
 }

@@ -15,8 +15,8 @@ class Client extends BaseClient
      */
     public function getUser($code)
     {
-        return $this->httpPostJson('access/getToken', [
-            'code' => $code
+        return $this->httpPostJson('access/getUser', [
+            'user_code' => $code
         ], [
             'agent_id' => $this->app['config']['agent_id']
         ]);

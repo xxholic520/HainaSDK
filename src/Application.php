@@ -9,11 +9,13 @@ use Sammy1992\Haina\Core\ServiceContainer;
  * Class Application
  *
  * @property Auth\AccessToken $access_token
+ * @property Company\Client $company
  */
 class Application extends ServiceContainer
 {
     protected $providers = [
         Auth\ServiceProvider::class,
+        Company\ServiceProvider::class,
 
         Base\ServiceProvider::class
     ];

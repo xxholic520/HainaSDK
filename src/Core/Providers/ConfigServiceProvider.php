@@ -6,7 +6,7 @@ namespace Sammy1992\Haina\Core\Providers;
 
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
-use Sammy1992\Haina\Core\Support\Config;
+use Sammy1992\Haina\Core\Config;
 
 /**
  * Class ConfigServiceProvider
