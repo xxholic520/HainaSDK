@@ -11,7 +11,7 @@ use Pimple\ServiceProviderInterface;
 class ServiceProvider implements ServiceProviderInterface
 {
     /**
-     * @param Container $pimple
+     * {@inheritDoc}
      */
     public function register(Container $pimple)
     {

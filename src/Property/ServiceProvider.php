@@ -1,15 +1,10 @@
 <?php
 
-
-namespace Sammy1992\Haina\Auth;
-
+namespace Sammy1992\Haina\Property;
 
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 
-/**
- * Class ServiceProvider
- */
 class ServiceProvider implements ServiceProviderInterface
 {
     /**
@@ -17,8 +12,8 @@ class ServiceProvider implements ServiceProviderInterface
      */
     public function register(Container $pimple)
     {
-        $pimple['access_token'] = function ($pimple) {
-            return new AccessToken($pimple);
+        $pimple['property'] = function ($pimple) {
+            return new Client($pimple);
         };
     }
 }

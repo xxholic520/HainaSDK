@@ -14,7 +14,7 @@ use Sammy1992\Haina\Base\Client;
 class ServiceProvider implements ServiceProviderInterface
 {
     /**
-     * @param Container $pimple
+     * {@inheritDoc}
      */
     public function register(Container $pimple)
     {
