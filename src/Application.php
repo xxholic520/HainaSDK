@@ -11,6 +11,7 @@ use Sammy1992\Haina\Core\ServiceContainer;
  * @property Auth\AccessToken $access_token
  * @property Company\Client $company
  * @property Property\Client $property
+ * @property Resources\Client $resources
  */
 class Application extends ServiceContainer
 {
@@ -18,6 +19,7 @@ class Application extends ServiceContainer
         Auth\ServiceProvider::class,
         Company\ServiceProvider::class,
         Property\ServiceProvider::class,
+        Resources\ServiceProvider::class,
 
         Base\ServiceProvider::class
     ];
