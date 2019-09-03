@@ -12,6 +12,7 @@ use Sammy1992\Haina\Core\ServiceContainer;
  * @property Company\Client $company
  * @property Property\Client $property
  * @property Resources\Client $resources
+ * @property Employee\Client $employee
  */
 class Application extends ServiceContainer
 {
@@ -20,6 +21,7 @@ class Application extends ServiceContainer
         Company\ServiceProvider::class,
         Property\ServiceProvider::class,
         Resources\ServiceProvider::class,
+        Employee\ServiceProvider::class,
 
         Base\ServiceProvider::class
     ];
