@@ -10,7 +10,9 @@ class Client extends BaseClient
 {
     /**
      * 获取小区楼栋结构列表
+     *
      * @param string $property_id 物业ID
+     *
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
@@ -23,8 +25,10 @@ class Client extends BaseClient
 
     /**
      * 获取楼栋地址树
-     * @param string $property_id 物业ID
+     *
+     * @param string $property_id  物业ID
      * @param string $community_id 小区楼栋结构ID
+     *
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
@@ -37,9 +41,11 @@ class Client extends BaseClient
 
     /**
      * 按照层级结构查询楼栋
-     * @param string $property_id 物业ID
-     * @param string $community_id 小区楼栋结构ID
+     *
+     * @param string      $property_id    物业ID
+     * @param string      $community_id   小区楼栋结构ID
      * @param string|null $parent_full_id 父节点full_id
+     *
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
@@ -54,10 +60,12 @@ class Client extends BaseClient
 
     /**
      * 批量获取已认证的业主信息
-     * @param string $property_id
+     *
+     * @param string      $property_id
      * @param string|null $community_id
-     * @param array $search
-     * @param array $page
+     * @param array       $search
+     * @param array       $page
+     *
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
@@ -78,13 +86,28 @@ class Client extends BaseClient
 
     /**
      * 获取物业所属服务号详情
+     *
      * @param string $property_id 物业ID
+     *
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function getInfo(string $property_id)
     {
         return $this->httpPostJson('resources/getProperty', compact('property_id'), [
+            'agent_id' => $this->app['config']['agent_id']
+        ]);
+    }
+
+    /**
+     * 获取已注册用户信息
+     * @param string $resident_code
+     *
+     * @return mixed
+     */
+    public function getResident(string $resident_code)
+    {
+        return $this->httpPostJson('access/getResident', compact('resident_code'), [
             'agent_id' => $this->app['config']['agent_id']
         ]);
     }
