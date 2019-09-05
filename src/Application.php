@@ -8,11 +8,12 @@ use Sammy1992\Haina\Core\ServiceContainer;
 /**
  * Class Application
  *
- * @property Auth\AccessToken $access_token
- * @property Company\Client $company
- * @property Property\Client $property
- * @property Resources\Client $resources
- * @property Employee\Client $employee
+ * @property Auth\AccessToken       $access_token
+ * @property Company\Client         $company
+ * @property Property\Client        $property
+ * @property Resources\Client       $resources
+ * @property Employee\Client        $employee
+ * @property TemplateMessage\Client $template_message
  */
 class Application extends ServiceContainer
 {
@@ -22,6 +23,7 @@ class Application extends ServiceContainer
         Property\ServiceProvider::class,
         Resources\ServiceProvider::class,
         Employee\ServiceProvider::class,
+        TemplateMessage\ServiceProvider::class,
 
         Base\ServiceProvider::class
     ];
