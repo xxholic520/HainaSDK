@@ -23,7 +23,7 @@ class Client extends BaseClient
      * @var array
      */
     protected $required = ['touser', 'property_id', 'template_no'];
-    
+
     /**
      * send message
      *
@@ -31,12 +31,9 @@ class Client extends BaseClient
      * @param array $data
      *
      * @return mixed
-     * @throws \Sammy1992\Haina\Core\Exceptions\InvalidArgumentException
      */
     public function send($property_id, array $data = [])
     {
-//        $data = $this->formatData($data);
-        $data = $this->formatMessage($data);
 
         return $this->httpPostJson('ability/templateSend', array_merge(compact('property_id'), $data), [
             'agent_id' => $this->app['config']['agent_id']
@@ -76,7 +73,7 @@ class Client extends BaseClient
             $params[$key] = empty($value) ? $this->message[$key] : $value;
         }
 
-        $params['template_data'] = $this->formatData($params['data']);
+        $params['template_data'] = $this->formatData($params['template_data']);
 
         return $params;
     }
